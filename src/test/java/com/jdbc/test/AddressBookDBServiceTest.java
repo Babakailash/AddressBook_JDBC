@@ -13,5 +13,14 @@ public class AddressBookDBServiceTest {
             List<AddressBookData> addressBookData = addressBookService.readAddressBookData(AddressBookService.IOService.DB_IO);
             Assertions.assertEquals(5,addressBookData.size());
         }
+
+    @Test
+    void givenNameForAddressBook_WhenUpdated_ShouldSyncWithDatabase() {
+        AddressBookService addressBookService = new AddressBookService();
+        List<AddressBookData> addressBookData = addressBookService.readAddressBookData(AddressBookService.IOService.DB_IO);
+        addressBookService.updateAddressBookLastName("Gaurav","Bodh");
+        boolean result = addressBookService.checkAddressBookInSyncWithDB("Gaurav");
+        Assertions.assertTrue(result);
+    }
     }
 

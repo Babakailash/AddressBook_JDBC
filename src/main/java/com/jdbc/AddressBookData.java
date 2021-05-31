@@ -1,5 +1,7 @@
 package com.jdbc;
 
+import java.util.Objects;
+
 public class AddressBookData {
     public int id;
     public String firstName;
@@ -40,12 +42,12 @@ public class AddressBookData {
                 '}';
     }
 
-   /* @Override
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AddressBookData that = (AddressBookData) o;
-        return id == that.id && CharSequence.compare(that.email.email) == 0 && Objects.equals(firstName, that.firstName);
-    }*/
+        return id == that.id && CharSequence.compare(that.email,email) == 0 && Objects.equals(firstName, that.firstName);
+    }
 }
 

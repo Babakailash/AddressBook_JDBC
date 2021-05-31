@@ -4,14 +4,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AddressBookDBService {
+
+    private PreparedStatement addressBookDataStatement;
+    private static AddressBookDBService addressBookDBService;
+
+    public AddressBookDBService() {
+    }
+
+    public static AddressBookDBService getInstance() {
+        if (addressBookDBService == null)
+            addressBookDBService = new AddressBookDBService();
+        return addressBookDBService;
+    }
+
     private Connection getConnection() throws SQLException {
         String jdbcURL = "jdbc:mysql://localhost:3306/addressbook?useSSL=false";
         String userName = "root";
         String password = "root";
         Connection connection;
-        System.out.println("Connecting to Database:" +jdbcURL);
-        connection = DriverManager.getConnection(jdbcURL,userName,password);
-        System.out.println("Connection Successful:" +connection);
+        System.out.println("Connecting to Database:" + jdbcURL);
+        connection = DriverManager.getConnection(jdbcURL, userName, password);
+        System.out.println("Connection Successful:" + connection);
         return connection;
     }
 
@@ -32,13 +45,72 @@ public class AddressBookDBService {
                 String phoneNumber = result.getString("PhoneNumber");
                 int zipCode = result.getInt("ZipCode");
                 String email = result.getString("Email");
-                addressBookDataList.add(new AddressBookData(id,firstName, lastName, address, city,state,
-                                            phoneNumber,zipCode,email));
+                addressBookDataList.add(new AddressBookData(id, firstName, lastName, address, city, state,
+                        phoneNumber, zipCode, email));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return addressBookDataList;
     }
-}
+
+    public int updateAddressBookData(String firstName, String lastName) {
+        String sql = String.format("update details set LastName = '%s' where FirstName = '%s';", lastName, firstName);
+        try (Connection connection = this.getConnection()) {
+            Statement statement = connection.createStatement();
+            return statement.executeUpdate(sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public List<AddressBookData> getAddressBookData(String firstName) {
+        List<AddressBookData> addressBookDataList = null;
+        if (this.addressBookDataStatement == null)
+            this.prepareStatementForAddressBook();
+        try {
+            addressBookDataStatement.setString(1, firstName);
+            ResultSet resultSet = addressBookDataStatement.executeQuery();
+            addressBookDataList = this.getAddressBookData(resultSet);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return addressBookDataList;
+    }
+
+    private List<AddressBookData> getAddressBookData(ResultSet resultSet) {
+        List<AddressBookData> addressBookDataList = new ArrayList<>();
+        try {
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String firstName = resultSet.getString("FirstName");
+                String lastName = resultSet.getString("LastName");
+                String address = resultSet.getString("Address");
+                String city = resultSet.getString("City");
+                String state = resultSet.getString("State");
+                String phoneNumber = resultSet.getString("PhoneNumber");
+                int zipCode = resultSet.getInt("ZipCode");
+                String email = resultSet.getString("Email");
+                addressBookDataList.add(new AddressBookData(id, firstName, lastName, address, city, state,
+                        phoneNumber, zipCode, email));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return addressBookDataList;
+
+    }
+        private void prepareStatementForAddressBook() {
+            try {
+                Connection connection = this.getConnection();
+                String sql = "select * from details where FirstName = ?";
+                addressBookDataStatement = connection.prepareStatement(sql);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
 
