@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class AddressBookService {
+
+
     public enum IOService {FILE_IO,DB_IO}
     private List<AddressBookData> addressBookDataList;
     private AddressBookDBService addressBookDBService;
@@ -15,6 +17,12 @@ public class AddressBookService {
     public List<AddressBookData> readAddressBookData(IOService iOservice) {
         if (iOservice.equals(IOService.DB_IO))
             this.addressBookDataList = new AddressBookDBService().readData();
+        return this.addressBookDataList;
+    }
+    //UC19-count city
+    public List<AddressBookData> readAddressBookDataByCity(String city) {
+        List<AddressBookData> addressBookDataList = addressBookDBService.getAddressBookData(city);
+        this.addressBookDataList = new AddressBookDBService().readAddressBookDataByCity(city);
         return this.addressBookDataList;
     }
 

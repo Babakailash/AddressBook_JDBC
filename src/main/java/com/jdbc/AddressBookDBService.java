@@ -29,6 +29,7 @@ public class AddressBookDBService {
         return connection;
     }
 
+
     public List<AddressBookData> readData() {
         String sql = "SELECT * FROM details";
         List<AddressBookData> addressBookDataList = new ArrayList<>();
@@ -70,6 +71,11 @@ public class AddressBookDBService {
     public List<AddressBookData> getAddressBookForDateRange(LocalDate startDate, LocalDate endDate) {
         String sql = String.format("SELECT * FROM details where start between '%s' and '%s';",
                 Date.valueOf(startDate), Date.valueOf(endDate));
+        return this.getAddressBookDataUsingDB(sql);
+    }
+
+    public List<AddressBookData> readAddressBookDataByCity(String city) {
+        String sql = String.format("SELECT * FROM details where City = '%s';",city);
         return this.getAddressBookDataUsingDB(sql);
     }
 
