@@ -1,5 +1,6 @@
 package com.jdbc;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,8 +46,9 @@ public class AddressBookDBService {
                 String phoneNumber = result.getString("PhoneNumber");
                 int zipCode = result.getInt("ZipCode");
                 String email = result.getString("Email");
+                LocalDate start = result.getDate("start").toLocalDate();
                 addressBookDataList.add(new AddressBookData(id, firstName, lastName, address, city, state,
-                        phoneNumber, zipCode, email));
+                        phoneNumber, zipCode, email,start));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -63,6 +65,24 @@ public class AddressBookDBService {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    public List<AddressBookData> getAddressBookForDateRange(LocalDate startDate, LocalDate endDate) {
+        String sql = String.format("SELECT * FROM details where start between '%s' and '%s';",
+                Date.valueOf(startDate), Date.valueOf(endDate));
+        return this.getAddressBookDataUsingDB(sql);
+    }
+
+    public List<AddressBookData> getAddressBookDataUsingDB(String sql) {
+        List<AddressBookData> addressBookDataList = new ArrayList<>();
+        try (Connection connection = this.getConnection()) {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql);
+            addressBookDataList =this.getAddressBookData(resultSet);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return addressBookDataList;
     }
 
     public List<AddressBookData> getAddressBookData(String firstName) {
@@ -92,8 +112,9 @@ public class AddressBookDBService {
                 String phoneNumber = resultSet.getString("PhoneNumber");
                 int zipCode = resultSet.getInt("ZipCode");
                 String email = resultSet.getString("Email");
+                LocalDate start = resultSet.getDate("start").toLocalDate();
                 addressBookDataList.add(new AddressBookData(id, firstName, lastName, address, city, state,
-                        phoneNumber, zipCode, email));
+                        phoneNumber, zipCode, email,start));
             }
         } catch (SQLException e) {
             e.printStackTrace();

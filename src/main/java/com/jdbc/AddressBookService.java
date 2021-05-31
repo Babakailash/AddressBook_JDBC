@@ -1,5 +1,6 @@
 package com.jdbc;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class AddressBookService {
@@ -34,5 +35,11 @@ public class AddressBookService {
                 .filter(addressBookDataItem -> addressBookDataItem.firstName.equals(firstName))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public List<AddressBookData> readAddressBookForDateRange(IOService ioService, LocalDate startDate, LocalDate endDate) {
+        if (ioService.equals(IOService.DB_IO))
+            return addressBookDBService.getAddressBookForDateRange(startDate, endDate);
+        return null;
     }
 }
