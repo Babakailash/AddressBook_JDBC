@@ -13,10 +13,10 @@ public class AddressBookData {
     public String phoneNumber;
     public int zipCode;
     public String email;
-    public LocalDate start;
+    public String start;
 
     public AddressBookData(int id, String firstName, String lastName, String address, String city, String state,
-                           String phoneNumber, int zipCode, String email, LocalDate start) {
+                           String phoneNumber, int zipCode, String email, String start) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;

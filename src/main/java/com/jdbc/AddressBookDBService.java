@@ -1,4 +1,5 @@
 package com.jdbc;
+import java.awt.print.Book;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -29,8 +30,27 @@ public class AddressBookDBService {
         return connection;
     }
 
+    //UC-20 Transaction, Add Person
+    public AddressBookData addPerson(String firstName, String lastName, String address, String city, String state,
+                                     String phoneNumber, int zipCode, String email, String start) throws SQLException {
+        int id = 6;
+        AddressBookData addressBookData = null;
+        String sql = String.format("insert into details(FirstName, LastName, Address, City, State, ZipCode, PhoneNumber, Email, start) values ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s','%s')", firstName, lastName, address, city, state, zipCode, phoneNumber, email, start);
+        try (Connection connection = this.getConnection()) {
+            Statement statement = connection.createStatement();
+            int rowChanged = statement.executeUpdate(sql, statement.RETURN_GENERATED_KEYS);
+            if (rowChanged == 1) {
+                ResultSet resultSet = statement.getGeneratedKeys();
+                if (resultSet.next())
+                    id = resultSet.getInt(1);
+            }
+            addressBookData = new AddressBookData(id, firstName, lastName, address, city, state, phoneNumber, zipCode, email, start);
 
-    public List<AddressBookData> readData() {
+            return addressBookData;
+        }
+    }
+
+        public List<AddressBookData> readData() {
         String sql = "SELECT * FROM details";
         List<AddressBookData> addressBookDataList = new ArrayList<>();
         try {
@@ -47,7 +67,7 @@ public class AddressBookDBService {
                 String phoneNumber = result.getString("PhoneNumber");
                 int zipCode = result.getInt("ZipCode");
                 String email = result.getString("Email");
-                LocalDate start = result.getDate("start").toLocalDate();
+                String start = result.getString("start");
                 addressBookDataList.add(new AddressBookData(id, firstName, lastName, address, city, state,
                         phoneNumber, zipCode, email,start));
             }
@@ -118,7 +138,7 @@ public class AddressBookDBService {
                 String phoneNumber = resultSet.getString("PhoneNumber");
                 int zipCode = resultSet.getInt("ZipCode");
                 String email = resultSet.getString("Email");
-                LocalDate start = resultSet.getDate("start").toLocalDate();
+                String start = resultSet.getString("start");
                 addressBookDataList.add(new AddressBookData(id, firstName, lastName, address, city, state,
                         phoneNumber, zipCode, email,start));
             }
@@ -128,16 +148,17 @@ public class AddressBookDBService {
         return addressBookDataList;
 
     }
-        private void prepareStatementForAddressBook() {
-            try {
-                Connection connection = this.getConnection();
-                String sql = "select * from details where FirstName = ?";
-                addressBookDataStatement = connection.prepareStatement(sql);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+
+    private void prepareStatementForAddressBook() {
+        try {
+            Connection connection = this.getConnection();
+            String sql = "select * from details where FirstName = ?";
+            addressBookDataStatement = connection.prepareStatement(sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
+}
 
 
 

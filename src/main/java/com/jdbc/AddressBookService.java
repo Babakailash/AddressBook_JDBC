@@ -1,10 +1,10 @@
 package com.jdbc;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
 public class AddressBookService {
-
 
     public enum IOService {FILE_IO,DB_IO}
     private List<AddressBookData> addressBookDataList;
@@ -49,5 +49,17 @@ public class AddressBookService {
         if (ioService.equals(IOService.DB_IO))
             return addressBookDBService.getAddressBookForDateRange(startDate, endDate);
         return null;
+    }
+
+    public List<AddressBookData> addPerson(String firstName, String lastName, String address, String city, String state,
+                                           String phoneNumber, int zipCode, String email, String start) throws SQLException {
+        addressBookDataList.add(addressBookDBService.addPerson(firstName, lastName, address, city, state, phoneNumber, zipCode,
+                                                               email, start));
+        return addressBookDataList;
+    }
+
+    public boolean UpdatedRecordSyncWithDB(String firstName) {
+        List<AddressBookData> addressBookData = addressBookDBService.getAddressBookData(firstName);
+        return addressBookData.get(0).equals(getAddressBookData(firstName));
     }
 }
