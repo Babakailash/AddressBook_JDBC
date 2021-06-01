@@ -2,9 +2,12 @@ package com.jdbc;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AddressBookService {
+
 
     public enum IOService {FILE_IO,DB_IO}
     private List<AddressBookData> addressBookDataList;
@@ -62,4 +65,26 @@ public class AddressBookService {
         List<AddressBookData> addressBookData = addressBookDBService.getAddressBookData(firstName);
         return addressBookData.get(0).equals(getAddressBookData(firstName));
     }
+
+    public void addMultiplePersonContactsToDBUsingThreads(List<AddressBookData> asList) throws InterruptedException {
+        Map<Integer, Boolean> addressAdditionStatus = new HashMap<>();
+        asList.forEach(addressbookdata -> {
+            Runnable task = () -> { addressAdditionStatus.put(addressbookdata.hashCode(), false);
+                System.out.println("Person_Contact Multiple Added:" + Thread.currentThread().getName());
+                try {
+                    this.addPerson(addressbookdata.getFirstName(), addressbookdata.getLastName(),
+                                addressbookdata.getAddress(), addressbookdata.getCity(), addressbookdata.getState(),
+                                addressbookdata.getPhoneNumber(), addressbookdata.getZipCode(), addressbookdata.getEmail(),
+                                addressbookdata.getStart());
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+                addressAdditionStatus.put(addressbookdata.hashCode(), true);
+                System.out.println("Multiple Contact Added:" + Thread.currentThread().getName()); };
+            Thread thread = new Thread(task, addressbookdata.getFirstName());
+            thread.start();
+        });
+        while (addressAdditionStatus.containsValue(false))
+                Thread.sleep(50);
+        }
 }

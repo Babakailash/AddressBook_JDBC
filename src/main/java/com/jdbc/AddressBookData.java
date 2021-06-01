@@ -30,6 +30,43 @@ public class AddressBookData {
 
     }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public int getZipCode() {
+        return zipCode;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getStart() {
+        return start;
+    }
+
+
     @Override
     public String toString() {
         return "AddressBookData{" +
